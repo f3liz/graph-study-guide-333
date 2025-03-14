@@ -1,6 +1,11 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Practice {
 
@@ -25,8 +30,26 @@ public class Practice {
    * @return the number of vertices with odd values reachable from the starting vertex
    */
   public static int oddVertices(Vertex<Integer> starting) {
-    return 0;
+    return oddVertices(starting, new HashSet<Vertex<Integer>>());
   }
+
+  private static int oddVertices(Vertex<Integer> num, Set<Vertex<Integer>> visited) {
+    if (visited.contains(num) || num == null) return 0;
+
+    int count = 0;
+
+    if(num.data % 2 != 0) {
+      count++;
+    }
+
+    visited.add(num);
+
+    for (var neighbor : num.neighbors) {
+      count += oddVertices(neighbor, visited);
+    }
+
+    return count;
+   }
 
   /**
    * Returns a *sorted* list of all values reachable from the starting vertex (including the starting vertex itself).
@@ -48,7 +71,25 @@ public class Practice {
    */
   public static List<Integer> sortedReachable(Vertex<Integer> starting) {
     // Unimplemented: perform a depth-first search and sort the collected values.
-    return null;
+    List<Integer> sortedList = new ArrayList<>();
+
+    sortedReachable(starting, new HashSet<Vertex<Integer>>(), sortedList);
+
+    Collections.sort(sortedList);
+    
+    return sortedList;
+  }
+
+  private static void sortedReachable(Vertex<Integer> num, Set<Vertex<Integer>> visited, List<Integer> sortedList) {
+    if (visited.contains(num) || num == null) return;
+
+    visited.add(num);
+
+    sortedList.add(num.data);
+
+    for (var neighbor: num.neighbors) {
+      sortedReachable(neighbor, visited, sortedList);
+    }
   }
 
   /**
@@ -62,7 +103,24 @@ public class Practice {
    * @return a sorted list of all reachable vertex values
    */
   public static List<Integer> sortedReachable(Map<Integer, Set<Integer>> graph, int starting) {
-    return null;
+    List<Integer> list = new ArrayList<>();
+
+    sortedReachable(graph, starting, new HashSet<Integer>(), list);
+
+    Collections.sort(list);
+    return list;
+  }
+
+  private static void sortedReachable(Map<Integer, Set<Integer>> graph, int num, Set<Integer> visited, List<Integer> list) {
+    if (!graph.containsKey(num) || visited.contains(num)) return;
+
+    visited.add(num);
+
+    list.add(num);
+
+    for (var neighbor: graph.get(num)) {
+      sortedReachable(graph, neighbor, visited, list);
+    }
   }
 
   /**
@@ -80,6 +138,18 @@ public class Practice {
    * @return true if there is a two-way connection between v1 and v2, false otherwise
    */
   public static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2) {
+    return twoWay(v1, v2, new HashSet<Vertex<T>>()) && twoWay(v2, v1, new HashSet<Vertex<T>>());
+  }
+
+  private static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2, Set<Vertex<T>> visited) {
+    if (v1 == null || v2 == null) return false;
+    if (v1 == v2) return true;
+
+    visited.add(v2);
+
+    for (var neighbor : v1.neighbors) {
+      if (twoWay(neighbor, v2, visited)) return true;
+    }
     return false;
   }
 
@@ -96,7 +166,24 @@ public class Practice {
    * @return whether there exists a valid positive path from starting to ending
    */
   public static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int starting, int ending) {
+    return positivePathExists(graph, starting, ending, new HashSet<Integer>());
+  }
+
+  private static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int num, int ending, Set<Integer> visited) {
+    if (num < 0 || ending < 0) return false;
+    if (num == ending) return true;
+    if (visited.contains(num) || !graph.containsKey(num)) return false;
+
+    visited.add(num);
+
+    for (var neighbor : graph.get(num)) {
+      if (neighbor > 0 && neighbor > num) {
+        if (positivePathExists(graph, neighbor, ending)) return true;
+      }
+    }
+
     return false;
+
   }
 
   /**
@@ -109,6 +196,19 @@ public class Practice {
    * @return true if a person in the extended network works at the specified company, false otherwise
    */
   public static boolean hasExtendedConnectionAtCompany(Professional person, String companyName) {
+    return hasExtendedConnectionAtCompany(person, companyName, new HashSet<Professional>());
+  }
+
+  private static boolean hasExtendedConnectionAtCompany(Professional person, String companyName, Set<Professional> known) {
+    if (person == null || known.contains(person)) return false;
+
+    known.add(person);
+
+    if (person.getCompany().equals(companyName)) return true;
+
+    for (var acquaintance : person.getConnections()) {
+      if (hasExtendedConnectionAtCompany(acquaintance, companyName, known)) return true;
+    }
     return false;
   }
 }
