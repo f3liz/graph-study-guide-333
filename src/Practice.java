@@ -170,15 +170,15 @@ public class Practice {
   }
 
   private static boolean positivePathExists(Map<Integer, Set<Integer>> graph, int num, int ending, Set<Integer> visited) {
+    if (visited.contains(num) || !graph.containsKey(num)) return false;
     if (num < 0 || ending < 0) return false;
     if (num == ending) return true;
-    if (visited.contains(num) || !graph.containsKey(num)) return false;
 
     visited.add(num);
 
     for (var neighbor : graph.get(num)) {
-      if (neighbor > 0 && neighbor > num) {
-        if (positivePathExists(graph, neighbor, ending)) return true;
+      if (neighbor > 0) {
+        if (positivePathExists(graph, neighbor, ending, visited)) return true;
       }
     }
 
