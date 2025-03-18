@@ -143,6 +143,7 @@ public class Practice {
 
   private static <T> boolean twoWay(Vertex<T> v1, Vertex<T> v2, Set<Vertex<T>> visited) {
     if (v1 == null || v2 == null) return false;
+    if (visited.contains(v1)) return false;
     if (v1 == v2) return true;
 
     visited.add(v1);
