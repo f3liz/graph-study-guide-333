@@ -145,7 +145,7 @@ public class Practice {
     if (v1 == null || v2 == null) return false;
     if (v1 == v2) return true;
 
-    visited.add(v2);
+    visited.add(v1);
 
     for (var neighbor : v1.neighbors) {
       if (twoWay(neighbor, v2, visited)) return true;
